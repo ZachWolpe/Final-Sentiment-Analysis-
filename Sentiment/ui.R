@@ -1,33 +1,47 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
+
 
 library(shiny)
 
+# source('Sentiment/functions.R')
+
+
+
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+    
+    theme = shinythemes::shinytheme('flatly'),
 
     # Application title
-    titlePanel("Old Faithful Geyser Data"),
+    titlePanel("Equity Sentiment Analysis"),
 
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
+            width=3,
+            dateRangeInput('dateRange', 'Stock date range:', start = Sys.Date()-365, end = Sys.Date()),
+            selectizeInput('available_stocks', 'Select Stocks', jse_tickers['stock_name'], multiple=T),
+            tags$div(),
+            tags$br(),
+            sliderInput("no_tweets", "Number of Tweets (per user):", min = 10, max = 2500, value = 1000),
+            numericInput("n", "Twitter Users", value=1, min=1, step=1, max=10),
+            uiOutput('users_names'),
+            textOutput('twitter_users'),
+            tags$div(),
+            tags$br(),
+            actionButton('Submit', 'Submit'),
         ),
+
 
         # Show a plot of the generated distribution
         mainPanel(
-            plotOutput("distPlot")
+            tableOutput('user_stats'),
+            plotOutput('diversified_sentiment'),
+            plotOutput('sent_time_series'),
+            plotOutput('stockPlot'),
+            plotOutput('volumePlot')
         )
     )
 ))
+
+
+
